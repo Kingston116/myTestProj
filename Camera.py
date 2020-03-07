@@ -3,7 +3,6 @@ from collections import deque
 import numpy as np
 import argparse
 import cv2
-import threading
 import imutils
 import logging
 from pyzbar import pyzbar
@@ -18,6 +17,8 @@ class Camera:
         self.red = 0
         self.color_lower, self.color_upper = self.get_colour_bound()
         self.camera = cv2.VideoCapture(0)
+        self.x = 0
+        self.y = 0
 
     def get_colour_bound(self):
         color = np.uint8([[[self.blue, self.green, self.red]]])
@@ -73,6 +74,7 @@ class Camera:
 
         # show the frame to our screen
         cv2.imshow("Frame", frame)
+        return self.x, self.y
 
     def camera(self):
 
@@ -97,10 +99,9 @@ class Camera:
         self.check_object()
 
         # cleanup the camera and close any open windows
-        #camera.release()
-        #cv2.destroyAllWindows()
+        # camera.release()
+        # cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-
