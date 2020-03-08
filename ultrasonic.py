@@ -44,7 +44,7 @@ class Ultrasonic:
     def get_distance(self):
         try:
             self.z = 0
-            while self.z > 0:
+            while self.z == 0:
                 self.z = self.distance()
             logging.debug('Distance {0}'.format(self.z))
             time.sleep(0.1)
