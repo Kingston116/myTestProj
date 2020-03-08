@@ -48,7 +48,7 @@ class Ultrasonic:
                 self.z = self.distance()
             logging.debug('Distance {0}'.format(self.z))
             time.sleep(0.1)
-            return
+            return self.z
 
             # Reset by pressing CTRL + C
         except KeyboardInterrupt:

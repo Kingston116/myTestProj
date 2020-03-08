@@ -48,7 +48,7 @@ class servo():
         counter = 0
         current_coord = self.get_current_coord()
 
-        self.check_object()
+        self.x, self.y = self.check_object()
         for base_list in self.robot.list_coord:
             list_coord = self.robot.dict_coord[str(base_list)]
             for new_coord in list_coord:
@@ -65,39 +65,41 @@ class servo():
                     logging.debug('Start X')
 
                     TYAxis = threading.Thread(target=self.adjustYAxis)
-                    # TYAxis.start()
+                    TYAxis.start()
                     logging.debug('Start Y')
                     while not self.xComplete or not self.yComplete:
                         continue
+                    self.adjustZAxis()
+                    return
                     '''
                     TMove = threading.Thread(target=self.movementLoop)
                     TMove.start()'''
 
     def adjustYAxis(self):
-        rotateFistElbowAngle = 45
-        self.kit.servo[1].angle = rotateFistElbowAngle
-        time.sleep(5)
+        rotateFistElbowAngle = self.kit.servo[1].angle
         try:
             while True:
                 y = self.y
                 logging.debug('Y adjust {0}'.format(["Y Coord", y]))
-                if 300 > y > 200:
+                if 300 > y > 200 and 350 > self.x > 250:
                     # rotateFistElbowAngle = 45
                     self.yValue = rotateFistElbowAngle
                     break
                 while y > 300 and rotateFistElbowAngle < 100:
+                    
                     rotateFistElbowAngle = rotateFistElbowAngle + 1
                     self.kit.servo[1].angle = rotateFistElbowAngle
                     # print(["Y", rotateFistElbowAngle, y])
                     logging.debug('Y adjust {0}'.format(["Y", rotateFistElbowAngle, y]))
-                    time.sleep(0.3)
+                    self.check_object()
                     y = self.y
                 while y < 200 and rotateFistElbowAngle > 15:
+                    
                     rotateFistElbowAngle = rotateFistElbowAngle - 1
                     self.kit.servo[1].angle = rotateFistElbowAngle
                     # print(["Y", rotateFistElbowAngle, y])
                     logging.debug('Y adjust {0}'.format(["Y", rotateFistElbowAngle, y]))
-                    time.sleep(0.3)
+                    self.check_object()
                     y = self.y
                 time.sleep(1)
         except KeyboardInterrupt:
@@ -110,15 +112,13 @@ class servo():
 
     def adjustXAxis(self):
         rotateAngle = self.kit.servo[2].angle
-        #time.sleep(1)
-        #self.kit.servo[2].angle = rotateAngle
-        #time.sleep(5)
+        rotateFistElbowAngle = self.kit.servo[1].angle
         try:
             while True:
                 x = self.x
                 logging.debug('X adjust {0}'.format(["X Coord", x]))
                 # print(["X Coord", x])
-                if 350 > x > 250:
+                if 350 > x > 250 and 300 > self.y > 200:
                     # rotateAngle = 90
                     self.xValue = rotateAngle
                     break
@@ -145,7 +145,24 @@ class servo():
             self.rotateAngle = rotateAngle
             self.yComplete = True
         time.sleep(2)
-
+    
+    def adjustZAxis(self):
+        rotateAngle = self.kit.servo[5].angle
+        rotateFistElbowAngle = self.kit.servo[1].angle
+        z = self.ultrasonic.get_distance()
+        try:
+            while z > 2:
+                rotateAngle = rotateAngle - 4
+                self.kit.servo[5].angle = rotateAngle
+                rotateFistElbowAngle = rotateFistElbowAngle - 0.2
+                self.kit.servo[1].angle = rotateFistElbowAngle
+                time.sleep(0.1)
+                z = self.ultrasonic.get_distance()
+        except KeyboardInterrupt:
+            print("except")
+        finally:
+            print("finally")
+                
     def moveXrapid(self, x):
         self.kit.servo[2].angle = x
         time.sleep(0.2)

@@ -13,14 +13,12 @@ class Camera:
     def __init__(self):
         # Set channels to the number of servo channels on your kit.
         # 8 for FeatherWing, 16 for Shield/HAT/Bonnet.
-        self.blue = 112
-        self.green = 130
-        self.red = 19
+        self.blue = 0
+        self.green = 0
+        self.red = 119
         self.color_lower, self.color_upper = self.get_colour_bound()
         self.camera = cv2.VideoCapture(0)
         self.frame=None
-        Tx = threading.Thread(target=self.show_image)
-        Tx.start()
         self.x = 0
         self.y = 0
     
