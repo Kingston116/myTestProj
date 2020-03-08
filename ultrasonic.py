@@ -43,10 +43,12 @@ class Ultrasonic:
 
     def get_distance(self):
         try:
-            while True:
+            self.z = 0
+            while self.z > 0:
                 self.z = self.distance()
-                logging.debug('Distance {0}'.format(self.z))
-                time.sleep(0.1)
+            logging.debug('Distance {0}'.format(self.z))
+            time.sleep(0.1)
+            return
 
             # Reset by pressing CTRL + C
         except KeyboardInterrupt:
