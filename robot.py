@@ -10,7 +10,7 @@ class Robot:
         self.y = -1
         self.x = -1
         self.kit = ServoKit(channels=16)
-        self.list_coord = [45, 90, 135]
+        self.list_coord = [90, 45, 135]
         self.dict_coord = {"45": [(45, 125, 110, 35, 135, 45),
                                   (45, 120, 115, 40, 133, 46),
                                   (45, 115, 120, 45, 131, 47),
@@ -50,15 +50,20 @@ class Robot:
                                    (135, 70, 165, 90, 70, 120)],
                            }
 
-    def identify(self):
-
-        counter = 0
+    def get_current_coord(self):
         current_coord = (round(self.kit.servo[2].angle),
                          round(self.kit.servo[5].angle),
                          round(self.kit.servo[4].angle),
                          round(self.kit.servo[1].angle),
                          round(self.kit.servo[0].angle),
                          round(self.kit.servo[3].angle))
+        logging.debug("Current : {0}".format(current_coord))
+        return current_coord
+    
+    def identify(self):
+
+        counter = 0
+        current_coord = self.get_current_coord()
         for base_list in self.list_coord:
             list_coord = self.dict_coord[str(base_list)]
             if self.y is -1 or self.x is -1:

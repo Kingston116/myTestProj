@@ -81,21 +81,21 @@ class servo():
             while True:
                 y = self.y
                 logging.debug('Y adjust {0}'.format(["Y Coord", y]))
-                if 300 > y > 200 and 350 > self.x > 250:
+                if 363 >= y >= 360 and 326 >= self.x >= 324:
                     # rotateFistElbowAngle = 45
                     self.yValue = rotateFistElbowAngle
                     break
-                while y > 300 and rotateFistElbowAngle < 100:
+                while y > 363 and rotateFistElbowAngle < 100:
                     
-                    rotateFistElbowAngle = rotateFistElbowAngle + 1
+                    rotateFistElbowAngle = rotateFistElbowAngle + 0.05
                     self.kit.servo[1].angle = rotateFistElbowAngle
                     # print(["Y", rotateFistElbowAngle, y])
                     logging.debug('Y adjust {0}'.format(["Y", rotateFistElbowAngle, y]))
                     self.check_object()
                     y = self.y
-                while y < 200 and rotateFistElbowAngle > 15:
+                while y < 360 and rotateFistElbowAngle > 15:
                     
-                    rotateFistElbowAngle = rotateFistElbowAngle - 1
+                    rotateFistElbowAngle = rotateFistElbowAngle - 0.05
                     self.kit.servo[1].angle = rotateFistElbowAngle
                     # print(["Y", rotateFistElbowAngle, y])
                     logging.debug('Y adjust {0}'.format(["Y", rotateFistElbowAngle, y]))
@@ -118,21 +118,21 @@ class servo():
                 x = self.x
                 logging.debug('X adjust {0}'.format(["X Coord", x]))
                 # print(["X Coord", x])
-                if 350 > x > 250 and 300 > self.y > 200:
+                if 326 >= x >= 324 and 363 >= self.y >= 360:
                     # rotateAngle = 90
                     self.xValue = rotateAngle
                     break
                 time.sleep(2)
 
-                while x > 350 and rotateAngle > 45:
-                    rotateAngle = rotateAngle - 1
+                while x > 326 and rotateAngle > 45:
+                    rotateAngle = rotateAngle - 0.05
                     self.kit.servo[2].angle = rotateAngle
                     # print(["X", rotateAngle, x])
                     logging.debug('X adjust {0}'.format(["X", rotateAngle, x]))
                     self.check_object()
                     x = self.x
-                while x < 250 and rotateAngle < 130:
-                    rotateAngle = rotateAngle + 1
+                while x < 324 and rotateAngle < 130:
+                    rotateAngle = rotateAngle + 0.05
                     self.kit.servo[2].angle = rotateAngle
                     logging.debug('X adjust {0}'.format(["X", rotateAngle, x]))
                     self.check_object()
@@ -151,10 +151,11 @@ class servo():
         rotateFistElbowAngle = self.kit.servo[1].angle
         z = self.ultrasonic.get_distance()
         try:
-            while z > 2:
-                rotateAngle = rotateAngle - 4
+            while z > 3.5:
+                self.robot.get_current_coord()
+                rotateAngle = rotateAngle - 1
                 self.kit.servo[5].angle = rotateAngle
-                rotateFistElbowAngle = rotateFistElbowAngle - 0.2
+                rotateFistElbowAngle = rotateFistElbowAngle + 0.16
                 self.kit.servo[1].angle = rotateFistElbowAngle
                 time.sleep(0.1)
                 z = self.ultrasonic.get_distance()
@@ -234,13 +235,28 @@ if __name__ == "__main__":
     # servoObj.kit.servo[5].angle = 120
     # time.sleep(0.2)
     # time.sleep(15)
+    servoObj.kit.servo[4].angle = 110
+    time.sleep(0.2)
+    servoObj.robot.robot_coord((90, 130, 120, 30, 90, 90))
+    time.sleep(0.2)
     servoObj.findAngle()
-    # servoObj.kit.servo[4].angle = 160
+    servoObj.adjustXAxis()
+    servoObj.adjustYAxis()
+    coord = servoObj.robot.get_current_coord()
+    new_coord = (coord[0],coord[1]-12,coord[2], coord[3],coord[4],coord[5])
+    servoObj.robot.robot_coord(new_coord)
+    new_coord = (coord[0],coord[1],coord[2], coord[3],coord[4],coord[5])
+    servoObj.robot.robot_coord(new_coord)
     # time.sleep(0.2)
     # servoObj.kit.servo[1].angle = 20
     # time.sleep(0.2)
     # servoObj.kit.servo[3].angle = 135
     # servoObj.kit.servo[0].angle = 70
-    # servoObj.robot_coord((135, 125, 130, 35, 10, 180))
-    # servoObj.robot_coord((135, 115, 120, 45, 20, 180))
-    print(servoObj.check_object())
+    '''servoObj.robot.robot_coord((84, 61, 120, 46, 90, 90))
+    time.sleep(0.2)
+    servoObj.robot.robot_coord((87, 61, 120, 40, 90, 90))
+    time.sleep(0.2)
+    servoObj.robot.robot_coord((87, 47, 120, 40, 90, 90))
+    time.sleep(0.2)
+    servoObj.robot.robot_coord((84, 61, 120, 40, 90, 90))
+    print(servoObj.check_object())'''
