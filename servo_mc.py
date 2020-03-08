@@ -57,9 +57,11 @@ class servo():
                     self.check_object()
                     current_coord = new_coord
                     counter += 1
-                else:
+                else:                    
+                    self.check_object()
+                    #self.camera.get_barcode()
                     TXAxis = threading.Thread(target=self.adjustXAxis)
-                    # TXAxis.start()
+                    TXAxis.start()
                     logging.debug('Start X')
 
                     TYAxis = threading.Thread(target=self.adjustYAxis)
@@ -107,10 +109,10 @@ class servo():
         time.sleep(2)
 
     def adjustXAxis(self):
-        rotateAngle = 90
-        time.sleep(1)
-        self.kit.servo[2].angle = rotateAngle
-        time.sleep(5)
+        rotateAngle = self.kit.servo[2].angle
+        #time.sleep(1)
+        #self.kit.servo[2].angle = rotateAngle
+        #time.sleep(5)
         try:
             while True:
                 x = self.x
@@ -127,13 +129,13 @@ class servo():
                     self.kit.servo[2].angle = rotateAngle
                     # print(["X", rotateAngle, x])
                     logging.debug('X adjust {0}'.format(["X", rotateAngle, x]))
-                    time.sleep(0.3)
+                    self.check_object()
                     x = self.x
                 while x < 250 and rotateAngle < 130:
                     rotateAngle = rotateAngle + 1
                     self.kit.servo[2].angle = rotateAngle
                     logging.debug('X adjust {0}'.format(["X", rotateAngle, x]))
-                    time.sleep(0.3)
+                    self.check_object()
                     x = self.x
                 time.sleep(1)
         except KeyboardInterrupt:
@@ -214,8 +216,8 @@ if __name__ == "__main__":
     # Arm
     # servoObj.kit.servo[5].angle = 120
     # time.sleep(0.2)
-    time.sleep(15)
-    # servoObj.findAngle()
+    # time.sleep(15)
+    servoObj.findAngle()
     # servoObj.kit.servo[4].angle = 160
     # time.sleep(0.2)
     # servoObj.kit.servo[1].angle = 20

@@ -1,5 +1,6 @@
 import logging
 from time import sleep
+from adafruit_servokit import ServoKit
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -8,6 +9,7 @@ class Robot:
     def __init__(self):
         self.y = -1
         self.x = -1
+        self.kit = ServoKit(channels=16)
         self.list_coord = [45, 90, 135]
         self.dict_coord = {"45": [(45, 125, 110, 35, 135, 45),
                                   (45, 120, 115, 40, 133, 46),
@@ -109,7 +111,7 @@ class Robot:
         self.kit.servo[3].angle = coord[5]
 
         logging.debug("Moved to : {0}".format(coord))
-        sleep(0.3)
+        sleep(0.2)
 
 
 if __name__ == "__main__":
