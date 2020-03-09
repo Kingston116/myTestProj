@@ -1,12 +1,11 @@
+import logging
 import time
-from collections import deque
-import numpy as np
-import argparse
+
 import cv2
 import imutils
-import logging
+import numpy as np
 from pyzbar import pyzbar
-import threading
+
 
 class Camera:
     def __init__(self):
@@ -17,10 +16,10 @@ class Camera:
         self.red = 114
         self.color_lower, self.color_upper = self.get_colour_bound()
         self.camera = cv2.VideoCapture(0)
-        self.frame=None
+        self.frame = None
         self.x = 0
         self.y = 0
-    
+
     def show_image(self):
         # show the frame to our screen
         while True:
@@ -28,7 +27,6 @@ class Camera:
                 cv2.imshow("Frame", self.frame)
                 key = cv2.waitKey(1) & 0xFF
                 time.sleep(0.3)
-            
 
     def get_colour_bound(self):
         color = np.uint8([[[self.blue, self.green, self.red]]])
@@ -40,28 +38,14 @@ class Camera:
         print("Lower bound is :{0}".format(color_lower))
         print("Upper bound is :{0}".format(color_upper))
         return color_lower, color_upper
-    
-    def get_barcode(self):        
+
+    def get_barcode(self):
         (grabbed, self.frame) = self.camera.read()
         barcodes = pyzbar.decode(self.frame)
         logging.debug(barcodes)
         return barcodes
 
     def check_object(self):
-        
-        # construct the argument parse and parse the arguments
-        ap = argparse.ArgumentParser()
-        ap.add_argument("-v", "--video",
-                        help="path to the (optional) video file")
-        ap.add_argument("-b", "--buffer", type=int, default=64,
-                        help="max buffer size")
-        args = vars(ap.parse_args())
-
-        # define the lower and upper boundaries of the "yellow object"
-        # (or "ball") in the HSV color space, then initialize the
-        # list of tracked points
-
-        pts = deque(maxlen=args["buffer"])
         # grab the current frame
         (grabbed, self.frame) = self.camera.read()
 
@@ -70,7 +54,7 @@ class Camera:
         self.frame = imutils.resize(self.frame, width=600)
         self.frame = imutils.rotate(self.frame, angle=180)
         # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-        
+
         hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
 
         # construct a mask for the color "green", then perform
@@ -118,7 +102,6 @@ class Camera:
         return self.x, self.y
 
     def camera(self):
-
 
         # if a video path was not supplied, grab the reference
         # to the webcam

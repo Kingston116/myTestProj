@@ -5,6 +5,8 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 servo_obj = servo()
+
+
 @app.route('/', methods=['GET'])
 def home():
     return "<h1>Robot framework.</p>"
@@ -12,7 +14,7 @@ def home():
 
 @app.route('/find_button', methods=['GET'])
 def find_button():
-    return servo_obj.findButtonAngle()
+    return servo_obj.findAngle()
 
 
 app.run()
