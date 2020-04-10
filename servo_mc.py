@@ -31,7 +31,7 @@ class servo():
         self.ultrasonic = Ultrasonic()
 
         self.Y_limit = {"Lower": 360, "Upper": 363}
-        self.X_limit = {"Lower": 324, "Upper": 326}
+        self.X_limit = {"Lower": 314, "Upper": 316}
 
     def check_object(self):
         self.x, self.y = self.camera.check_object()
@@ -54,39 +54,40 @@ class servo():
         for base_list in self.robot.list_coord:
             list_coord = self.robot.dict_coord[str(base_list)]
             for new_coord in list_coord:
-                if self.y is -1 or self.x is -1:
+                if self.y is -1 and self.x is -1:
                     self.robot.move_to_coord(current_coord, new_coord)
-                    self.check_object()
+                    self.x, self.y = self.check_object()
                     current_coord = new_coord
                     counter += 1
                 else:
-                    self.check_object()
-                    TXAxis = threading.Thread(target=self.adjust_x_axis)
-                    TXAxis.start()
+                    self.x, self.y = self.check_object()
+                    self.adjust_x_axis()
+                    #TXAxis = threading.Thread(target=self.adjust_x_axis)
+                    #TXAxis.start()
                     logging.debug('Start X')
-
-                    TYAxis = threading.Thread(target=self.adjust_y_axis)
-                    TYAxis.start()
+                    self.adjust_y_axis()
+                    #TYAxis = threading.Thread(target=self.adjust_y_axis)
+                    #TYAxis.start()
                     logging.debug('Start Y')
                     while not self.xComplete or not self.yComplete:
                         continue
                     self.adjust_z_axis()
-                    return
+                    return self.get_current_coord()
 
     @staticmethod
     def get_increment_value(value, value_limit):
-        if value > (value_limit - 40):
-            increment_value = 2
+        if value > (value_limit + 60):
+            increment_value = 4
         else:
-            increment_value = 0.05
+            increment_value = 0.1
         return increment_value
 
     @staticmethod
     def get_decrement_value(value, value_limit):
-        if value < (value_limit - 40):
-            decrement_value = 2
+        if value < (value_limit - 60):
+            decrement_value = 4
         else:
-            decrement_value = 0.05
+            decrement_value = 0.1
         return decrement_value
 
     def adjust_y_axis(self):
@@ -94,25 +95,32 @@ class servo():
         try:
             while True:
                 y = self.y
+                condition = self.Y_limit['Lower'] <= y <= self.Y_limit['Upper']
+                #and self.X_limit['Lower'] < self.x < self.X_limit['Upper']
                 logging.debug('Y adjust {0}'.format(["Y Coord", y]))
-                if y in range(self.Y_limit['Lower'], self.Y_limit['Upper']) and \
-                        self.x in range(self.X_limit['Lower'], self.X_limit['Upper']):
+                logging.debug('Y condition {0}'.format(condition))
+                if condition:
                     self.yValue = rotate_first_elbow_angle
                     break
-                while y > self.Y_limit['Upper'] and rotate_first_elbow_angle < 100:
+                while y >= int(self.Y_limit['Upper']) and rotate_first_elbow_angle < 100:
                     rotate_first_elbow_angle = rotate_first_elbow_angle + \
-                                               self.get_increment_value(y, self.Y_limit['Upper'])
+                                               self.get_decrement_value(y, self.Y_limit['Upper'])
                     self.kit.servo[1].angle = rotate_first_elbow_angle
+                    
+                    self.kit.servo[4].angle = self.kit.servo[4].angle - self.get_decrement_value(y, self.Y_limit['Upper'])
                     logging.debug('Y adjust {0}'.format(["Y", rotate_first_elbow_angle, y]))
-                    self.check_object()
+                    #time.sleep(0.1)
+                    self.x, self.y = self.check_object()
                     y = self.y
-                while y < self.Y_limit['Lower'] and rotate_first_elbow_angle > 15:
+                while y <= int(self.Y_limit['Lower']) and rotate_first_elbow_angle > 0:
 
                     rotate_first_elbow_angle = rotate_first_elbow_angle - \
-                                               self.get_decrement_value(y, self.Y_limit['Lower'])
+                                               self.get_increment_value(y, self.Y_limit['Lower'])
                     self.kit.servo[1].angle = rotate_first_elbow_angle
+                    self.kit.servo[4].angle = self.kit.servo[4].angle + self.get_increment_value(y, self.Y_limit['Lower'])
                     logging.debug('Y adjust {0}'.format(["Y", rotate_first_elbow_angle, y]))
-                    self.check_object()
+                    #time.sleep(0.1)
+                    self.x, self.y = self.check_object()
                     y = self.y
                 time.sleep(1)
         except KeyboardInterrupt:
@@ -128,25 +136,27 @@ class servo():
         try:
             while True:
                 x = self.x
+                condition = self.X_limit['Lower'] <= x <= self.X_limit['Upper']
+                #and self.Y_limit['Lower'] < self.y < self.Y_limit['Upper']
                 logging.debug('X adjust {0}'.format(["X Coord", x]))
-                # print(["X Coord", x])
-                if x in range(self.X_limit['Lower'], self.X_limit['Upper']) and \
-                        self.y in range(self.Y_limit['Lower'], self.Y_limit['Upper']):
+                logging.debug('X condition {0}'.format(condition))
+                if condition:
                     self.xValue = rotate_base_angle
                     break
-                time.sleep(2)
 
-                while x > self.X_limit['Upper'] and rotate_base_angle > 45:
-                    rotate_base_angle = rotate_base_angle - self.get_increment_value(x, self.X_limit['Upper'])
+                while x >= int(self.X_limit['Upper']) and rotate_base_angle > 45:
+                    rotate_base_angle = rotate_base_angle - self.get_decrement_value(x, self.X_limit['Upper'])
                     self.kit.servo[2].angle = rotate_base_angle
                     logging.debug('X adjust {0}'.format(["X", rotate_base_angle, x]))
-                    self.check_object()
+                    #time.sleep(0.2)
+                    self.x, self.y = self.check_object()
                     x = self.x
-                while x < self.X_limit['Lower'] and rotate_base_angle < 130:
-                    rotate_base_angle = rotate_base_angle + self.get_decrement_value(x, self.X_limit['Lower'])
+                while x <= int(self.X_limit['Lower']) and rotate_base_angle < 130:
+                    rotate_base_angle = rotate_base_angle + self.get_increment_value(x, self.X_limit['Lower'])
                     self.kit.servo[2].angle = rotate_base_angle
                     logging.debug('X adjust {0}'.format(["X", rotate_base_angle, x]))
-                    self.check_object()
+                    #time.sleep(0.2)
+                    self.x, self.y = self.check_object()
                     x = self.x
                 time.sleep(1)
         except KeyboardInterrupt:
@@ -160,12 +170,15 @@ class servo():
     def adjust_z_axis(self):
         z = self.ultrasonic.get_distance()
         try:
-            while z > 3.5:
+            while z > 4.3:
                 self.robot.get_current_coord()
                 self.kit.servo[5].angle = self.kit.servo[5].angle - 1
-                self.kit.servo[1].angle = self.kit.servo[1].angle + 0.16
-                time.sleep(0.1)
+                self.kit.servo[1].angle = self.kit.servo[1].angle + 0.1
+                self.kit.servo[4].angle = self.kit.servo[4].angle + 0.1
+                logging.debug('X {0} Y {1}'.format(self.x, self.y))
+                               
                 z = self.ultrasonic.get_distance()
+            self.adjust_y_axis() 
         except KeyboardInterrupt:
             print("except")
         finally:
@@ -175,13 +188,16 @@ class servo():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     servoObj = servo()
-    servoObj.kit.servo[4].angle = 110
+    servoObj.kit.servo[4].angle = 90
     time.sleep(0.2)
-    servoObj.robot.robot_coord((90, 130, 120, 30, 90, 90))
+    servoObj.robot.robot_coord((90, 120, 120, 30, 90, 90))
     time.sleep(0.2)
     servoObj.findAngle()
     coord = servoObj.robot.get_current_coord()
-    new_coord = (coord[0], coord[1] - 12, coord[2], coord[3], coord[4], coord[5])
+    new_coord = (coord[0], coord[1] - 13, coord[2], coord[3], coord[4], coord[5])
     servoObj.robot.robot_coord(new_coord)
-    new_coord = (coord[0], coord[1], coord[2], coord[3], coord[4], coord[5])
+    time.sleep(0.2)
+    new_coord = (coord[0], coord[1] + 13, coord[2], coord[3], coord[4], coord[5])
     servoObj.robot.robot_coord(new_coord)
+    servoObj.camera.release()
+    servoObj.destroyAllWindows()

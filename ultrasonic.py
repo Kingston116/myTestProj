@@ -15,6 +15,8 @@ class Ultrasonic:
         GPIO.setup(self.GPIO_ECHO, GPIO.IN)
 
     def distance(self):
+        
+        StopTime = time.time()
         # set Trigger to HIGH
         GPIO.output(self.GPIO_TRIGGER, True)
 
@@ -23,12 +25,9 @@ class Ultrasonic:
         GPIO.output(self.GPIO_TRIGGER, False)
 
         StartTime = time.time()
-        StopTime = time.time()
-
-        # save StartTime
         while GPIO.input(self.GPIO_ECHO) == 0:
             StartTime = time.time()
-
+            
         # save time of arrival
         while GPIO.input(self.GPIO_ECHO) == 1:
             StopTime = time.time()
@@ -44,10 +43,11 @@ class Ultrasonic:
     def get_distance(self):
         try:
             self.z = 0
-            while self.z == 0:
+            while self.z == 0 or self.z > 30:
                 self.z = self.distance()
+                logging.debug('Distance {0}'.format(self.z))
             logging.debug('Distance {0}'.format(self.z))
-            time.sleep(0.1)
+            #time.sleep(0.1)
             return self.z
 
             # Reset by pressing CTRL + C

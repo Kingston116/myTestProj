@@ -24,7 +24,7 @@ class Camera:
         # show the frame to our screen
         while True:
             if self.frame is not None:
-                cv2.imshow("Frame", self.frame)
+                #cv2.imshow("Frame", self.frame)
                 key = cv2.waitKey(1) & 0xFF
                 time.sleep(0.3)
 
@@ -46,6 +46,7 @@ class Camera:
         return barcodes
 
     def check_object(self):
+        
         # grab the current frame
         (grabbed, self.frame) = self.camera.read()
 
