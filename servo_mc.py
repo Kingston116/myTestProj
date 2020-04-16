@@ -33,7 +33,7 @@ class servo():
         self.Y_limit = {"Lower": 360, "Upper": 363}
         self.X_limit = {"Lower": 314, "Upper": 316}
         self.dictColor = {"orange":(114,61,27),
-                          "green":(27,61,114)}
+                          "green":(50,168,82)}
 
         # for the api
         self.color_coordinates = {}
