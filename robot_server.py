@@ -60,8 +60,8 @@ def demo_down_button(count, coordinates, color):
     servo_obj.set_color(color)
     coordinate = coordinates.split(",")
     found_coordinates=((int(coordinate[0])), (int(coordinate[1])), (int(coordinate[2])), (int(coordinate[3])), (int(coordinate[4])), (int(coordinate[5])))
-    alt_coordinates = (found_coordinates[0], found_coordinates[1], found_coordinates[2], found_coordinates[3]+10, found_coordinates[4], found_coordinates[5])
-    alt_coordinates_press = (found_coordinates[0], found_coordinates[1]-7, found_coordinates[2], found_coordinates[3]+10, found_coordinates[4], found_coordinates[5])
+    alt_coordinates = (found_coordinates[0], found_coordinates[1], found_coordinates[2], found_coordinates[3]+ 7, found_coordinates[4], found_coordinates[5])
+    alt_coordinates_press = (found_coordinates[0], found_coordinates[1]-8, found_coordinates[2], found_coordinates[3]+7, found_coordinates[4], found_coordinates[5])
     found_coordinates_press = (found_coordinates[0], found_coordinates[1]-7, found_coordinates[2], found_coordinates[3], found_coordinates[4], found_coordinates[5])
     for i in range(0, int(count)):
         servo_obj.robot.robot_coord(found_coordinates)
