@@ -27,11 +27,20 @@ class servo():
         self.xComplete = False
         self.yComplete = False
         self.camera = Camera()
+        self.color = "orange"
         self.robot = Robot()
         self.ultrasonic = Ultrasonic()
-
         self.Y_limit = {"Lower": 360, "Upper": 363}
         self.X_limit = {"Lower": 314, "Upper": 316}
+        self.dictColor = {"orange":(27,61,114),
+                          "green":(27,61,114)}
+
+        # for the api
+        self.color_coordinates = {}
+
+    def set_color(self, color):
+        self.color = color
+        (self.camera.red, self.camera.green, self.camera.blue) = self.dictColor[color]
 
     def check_object(self):
         self.x, self.y = self.camera.check_object()

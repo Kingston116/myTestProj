@@ -37,6 +37,7 @@ class Camera:
         color_upper = np.array([hue + 10, 255, 255], dtype=np.uint8)
         print("Lower bound is :{0}".format(color_lower))
         print("Upper bound is :{0}".format(color_upper))
+        self.color_lower, self.color_upper = color_lower, color_upper
         return color_lower, color_upper
 
     def get_barcode(self):
