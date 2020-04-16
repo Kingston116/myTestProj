@@ -32,7 +32,7 @@ class servo():
         self.ultrasonic = Ultrasonic()
         self.Y_limit = {"Lower": 360, "Upper": 363}
         self.X_limit = {"Lower": 314, "Upper": 316}
-        self.dictColor = {"orange":(27,61,114),
+        self.dictColor = {"orange":(114,61,27),
                           "green":(27,61,114)}
 
         # for the api
